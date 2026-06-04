@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>부천시 활박물관 — 수호 복습 퀴즈</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  color-scheme:only dark;
+  --bg:#0c0c10;
+  --bg2:#12121a;
+  --bg3:#181824;
+  --card:#1c1c28;
+  --gold:#c8a84b;
+  --gold2:#e8cc80;
+  --text:#ede8dc;
+  --text2:#a99f8c;
+  --bubble:#16202e;
+  --bline:rgba(100,160,230,.35);
+  --border:rgba(200,168,75,.24);
+  --ok:#2fdf24;
+  --no:#f03535;
+}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;overflow-x:hidden;}
+body{min-height:100svh;background:radial-gradient(ellipse 90% 56% at 50% 0%,rgba(200,168,75,.08),transparent 64%),linear-gradient(180deg,#08080f 0%,var(--bg) 58%,#08080f 100%);}
+button,a{font:inherit;}
+.app{min-height:100svh;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.badge{padding-top:32px;text-align:center;z-index:5;}
+.badge .bl{width:42px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 6px;}
+.badge .bt{font-size:9.5px;letter-spacing:.32em;color:var(--gold);font-weight:300;}
+.badge .bk{font-size:11px;color:rgba(200,168,75,.6);letter-spacing:.12em;margin-top:3px;}
+.screen{display:none;min-height:calc(100svh - 70px);padding:22px 22px 28px;flex:1;align-items:center;justify-content:center;}
+.screen.active{display:flex;animation:screenIn .55s cubic-bezier(.2,.8,.2,1) both;}
+@keyframes screenIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.stage{width:min(100%,560px);display:flex;flex-direction:column;align-items:center;}
+.eyebrow{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:9px;}
+.title{font-size:28px;line-height:1.15;font-weight:700;text-align:center;margin-bottom:16px;}
+.title span{color:var(--gold2);}
+.portrait-wrap{width:min(92vw,360px);position:relative;margin-bottom:18px;}
+.portrait-wrap.large{width:min(94vw,390px);}
+.portrait-wrap::before{content:'';position:absolute;inset:7%;border-radius:50%;background:radial-gradient(circle,rgba(200,168,75,.18),transparent 68%);filter:blur(18px);}
+.portrait{position:relative;display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:8px;border:1px solid rgba(200,168,75,.32);box-shadow:0 22px 48px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset;}
+.bubble{width:100%;background:var(--bubble);border:1.5px solid var(--bline);border-radius:16px;padding:16px 17px;box-shadow:0 8px 28px rgba(0,0,0,.45);font-size:15px;line-height:1.78;white-space:pre-line;}
+.bubble b{color:var(--gold2);font-weight:600;}
+.primary-btn,.ghost-btn{border:0;border-radius:999px;min-height:52px;padding:0 24px;margin-top:18px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer;transition:transform .18s,background .18s,box-shadow .18s;}
+.primary-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#15100a;font-weight:800;box-shadow:0 10px 26px rgba(200,168,75,.25);}
+.ghost-btn{background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.36);color:var(--gold2);}
+.primary-btn:active,.ghost-btn:active,.choice:active{transform:scale(.97);}
+.question-card{width:100%;background:rgba(28,28,40,.9);border:1px solid var(--border);border-radius:16px;padding:17px;box-shadow:0 12px 34px rgba(0,0,0,.38);}
+.question-card p{font-size:15px;line-height:1.78;text-align:center;}
+.choices{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;}
+.choice{height:118px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .18s,border-color .18s,background .18s;}
+.choice span{font-size:76px;font-weight:900;line-height:1;}
+.choice.o span{color:var(--ok);}
+.choice.x span{color:var(--no);}
+.choice:hover{background:rgba(255,255,255,.1);border-color:rgba(200,168,75,.36);}
+.result-mark{position:absolute;right:-10px;bottom:-10px;width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:900;background:rgba(12,12,16,.9);border:2px solid currentColor;box-shadow:0 10px 25px rgba(0,0,0,.42);}
+.result-mark.ok{color:var(--ok);}
+.result-mark.no{color:var(--no);}
+.result .bubble{margin-top:2px;}
+.actions{width:100%;display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap;}
+.final-links{width:100%;display:flex;flex-direction:column;gap:10px;margin-top:18px;}
+.final-links .primary-btn,.final-links .ghost-btn{width:100%;margin-top:0;}
+.progress{display:flex;gap:7px;justify-content:center;margin:2px 0 14px;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(200,168,75,.25);}
+.dot.on{background:var(--gold);box-shadow:0 0 12px rgba(200,168,75,.5);}
+@media(max-width:430px){
+  .screen{padding:18px 18px 26px;}
+  .badge{padding-top:28px;}
+  .title{font-size:25px;}
+  .portrait-wrap{width:min(92vw,340px);}
+  .portrait-wrap.large{width:min(94vw,358px);}
+  .bubble{font-size:14.5px;padding:15px;}
+  .choice{height:104px;border-radius:16px;}
+  .choice span{font-size:68px;}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="badge">
+    <div class="bl"></div>
+    <div class="bt">Bucheon Bow Museum</div>
+    <div class="bk">부천시 활박물관</div>
+    <div class="bl" style="margin-top:5px;"></div>
+  </div>
+
+  <section class="screen active" id="intro">
+    <div class="stage">
+      <div class="eyebrow">Review Guide</div>
+      <h1 class="title"><span>수호</span>의 짧은 복습</h1>
+      <div class="portrait-wrap large">
+        <img class="portrait" src="Suho/hi.png" alt="수호">
+      </div>
+      <div class="bubble">왔구나.
+여기까지 잘 따라왔어.
+그럼, 방금 들은 이야기를 잠깐만 되짚어보자.</div>
+      <button class="primary-btn" type="button" data-go="q1">퀴즈 시작</button>
+    </div>
+  </section>
+
+  <section class="screen" id="q1">
+    <div class="stage">
+      <div class="progress"><span class="dot on"></span><span class="dot"></span></div>
+      <div class="eyebrow">문제 1 / 2</div>
+      <div class="portrait-wrap">
+        <img class="portrait" src="Suho/quiz.png" alt="질문하는 수호">
+      </div>
+      <div class="question-card">
+        <p>신기전기는 조선 초기에 제작된 로켓형 화살인 중·소신기전을 대량으로 발사하는 데 사용된 장치이다.</p>
+      </div>
+      <div class="choices">
+        <button class="choice o" type="button" data-answer="q1" data-choice="true"><span>O</span></button>
+        <button class="choice x" type="button" data-answer="q1" data-choice="false"><span>X</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen result" id="r1">
+    <div class="stage">
+      <div class="eyebrow" id="r1-label">정답</div>
+      <div class="portrait-wrap">
+        <img class="portrait" id="r1-img" src="Suho/right.png" alt="퀴즈 결과 수호">
+        <div class="result-mark ok" id="r1-mark">O</div>
+      </div>
+      <div class="bubble" id="r1-text"></div>
+      <div class="actions">
+        <button class="primary-btn" type="button" data-go="q2">다음 퀴즈</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="q2">
+    <div class="stage">
+      <div class="progress"><span class="dot"></span><span class="dot on"></span></div>
+      <div class="eyebrow">문제 2 / 2</div>
+      <div class="portrait-wrap">
+        <img class="portrait" src="Suho/quiz.png" alt="질문하는 수호">
+      </div>
+      <div class="question-card">
+        <p>화살은 전쟁뿐만 아니라 사냥, 신호나 통신 등 다양한 용도로 쓰였다.</p>
+      </div>
+      <div class="choices">
+        <button class="choice o" type="button" data-answer="q2" data-choice="true"><span>O</span></button>
+        <button class="choice x" type="button" data-answer="q2" data-choice="false"><span>X</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen result" id="r2">
+    <div class="stage">
+      <div class="eyebrow" id="r2-label">정답</div>
+      <div class="portrait-wrap">
+        <img class="portrait" id="r2-img" src="Suho/right.png" alt="퀴즈 결과 수호">
+        <div class="result-mark ok" id="r2-mark">O</div>
+      </div>
+      <div class="bubble" id="r2-text"></div>
+      <div class="actions">
+        <button class="primary-btn" type="button" data-go="final">다음 구역으로</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="final">
+    <div class="stage">
+      <div class="eyebrow">Next Chapter</div>
+      <h2 class="title">다음 구역으로</h2>
+      <div class="portrait-wrap large">
+        <img class="portrait" src="Suho/bye.png" alt="작별 인사를 하는 수호">
+      </div>
+      <div class="bubble">이제, 다음 구역으로 넘어가자.
+다음은 태용이가 함께 동행해줄거야.</div>
+      <div class="final-links">
+        <a class="primary-btn" href="https://olo8225.github.io/bucheon-bow-museum/bucheon_museum/Tae3part.html">챕터 3으로 이동</a>
+        <a class="ghost-btn" href="Shion_chapter2.html">챕터 2 다시 보기</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const answers = {
+    q1: true,
+    q2: true
+  };
+  const copy = {
+    q1: {
+      right: `그래, 맞아.
+신기전기는 중·소신기전을 한꺼번에 발사하기 위해 사용된 장치였어.
+제대로 기억하고 있었구나.
+
+잊지 않고 들어줘서 고마워.`,
+      wrong: `아쉽네.
+신기전기는 중·소신기전을 대량으로 발사하는 데 사용된 장치였어.
+
+괜찮아.
+다시 한 번 천천히 떠올려보자.
+잊힌 이야기는, 다시 기억하면 되니까.`
+    },
+    q2: {
+      right: `그래, 맞아.
+화살은 전쟁뿐만 아니라 사냥, 신호와 통신에도 쓰였어.
+잘 기억하고 있었네.
+
+그 이야기를 기억해줘서 고마워.`,
+      wrong: `아쉽네.
+화살은 전쟁에서만 쓰인 게 아니라, 사냥이나 신호, 통신에도 사용되었어.
+
+괜찮아.
+다시 한 번 천천히 떠올려보자.
+잊힌 이야기는, 다시 기억하면 되니까.`
+    }
+  };
+
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(screen => {
+      screen.classList.toggle('active', screen.id === id);
+    });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function setResult(questionId, isCorrect) {
+    const resultId = questionId === 'q1' ? 'r1' : 'r2';
+    const label = document.getElementById(`${resultId}-label`);
+    const image = document.getElementById(`${resultId}-img`);
+    const mark = document.getElementById(`${resultId}-mark`);
+    const text = document.getElementById(`${resultId}-text`);
+    label.textContent = isCorrect ? '정답' : '오답';
+    image.src = isCorrect ? 'Suho/right.png' : 'Suho/wrong.png';
+    image.alt = isCorrect ? '기뻐하는 수호' : '아쉬워하는 수호';
+    mark.textContent = isCorrect ? 'O' : 'X';
+    mark.className = `result-mark ${isCorrect ? 'ok' : 'no'}`;
+    text.textContent = copy[questionId][isCorrect ? 'right' : 'wrong'];
+    show(resultId);
+  }
+
+  document.querySelectorAll('[data-go]').forEach(button => {
+    button.addEventListener('click', () => show(button.dataset.go));
+  });
+
+  document.querySelectorAll('[data-answer]').forEach(button => {
+    button.addEventListener('click', () => {
+      const questionId = button.dataset.answer;
+      const choice = button.dataset.choice === 'true';
+      setResult(questionId, choice === answers[questionId]);
+    });
+  });
+})();
+</script>
+</body>
+</html>
